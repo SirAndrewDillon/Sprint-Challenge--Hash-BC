@@ -25,12 +25,23 @@ This sprint challenge is divided up into three parts:  Hash tables coding, block
 During your challenge, you will be pulled aside by a PM for a 5 minute interview. During this interview, you will be expected to answer the following two topics:
 
 Explain in detail the workings of a dynamic array:
+
 * What is the runtime complexity to access an array, add or remove from the front, and add or remove from the back?
+###  I guess I will start you off with the time complexity of a linked list:
+### Indexing---->O(n)
+### Inserting / Deleting at end---->O(1) or O(n)
+### Inserting / Deleting in middle--->O(1) with iterator O(n) with out
+### The time complexity for the Inserting at the end depends if you have the location of the last node, if you do, it would be O(1) other wise you will have to search through the linked list and the time complexity would jump to O(n).
+
 * What is the worse case scenario if you try to extend the storage size of a dynamic array?
+### Each addition is O(n), but n of them also require O(n).
 
 Explain how blockchain networks remain in consensus:
 * What does a node do if it gets a message from another in the network with a new block?
+### When a node discovers a new block, it will send an (unsolicited) inv (inventory message) to announce the new block to its peers. The peers should then respond by sending a getdata message requesting either the header, or the complete block.
+
 * Why can't someone cheat by changing a transaction from an earlier block to give themselves coins?
+### Because tou would have to change all the previous blocks. 
 
 ## Project Set Up
 
