@@ -3,7 +3,7 @@ import requests
 
 import sys
 
-from uuid import uuid4
+import uuid
 
 from timeit import default_timer as timer
 
@@ -18,6 +18,7 @@ def proof_of_work(last_proof):
     - IE:  last_hash: ...AE9123456, new hash 123456888...
     - p is the previous proof, and p' is the new proof
     - Use the same method to generate SHA-256 hashes as the examples in class
+    - Note:  We are adding the hash of the last proof to a number/nonce for the new proof
     """
 
     start = timer()
@@ -25,7 +26,11 @@ def proof_of_work(last_proof):
     print("Searching for next proof")
     proof = 0
     #  TODO: Your code here
-
+    last_hash = hashlib.sha256(f"{last_proof}".encode()).hexdigest()
+    
+    while not valid_proof(last_hash, proof):
+        proof = timer()
+        
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
 
@@ -33,22 +38,28 @@ def proof_of_work(last_proof):
 def valid_proof(last_hash, proof):
     """
     Validates the Proof:  Multi-ouroborus:  Do the last six characters of
-    the hash of the last proof match the first six characters of the hash
-    of the new proof?
-
-    IE:  last_hash: ...AE9123456, new hash 123456E88...
+    the hash of the last proof match the first six characters of the proof?
+    IE:  last_hash: ...AE9123456, new hash 123456888...
     """
 
     # TODO: Your code here!
-    pass
+    guess = f'{proof}'.encode()
+    guess_hash = hashlib.sha256(guess).hexdigest()
+    return guess_hash[:6] == last_hash[-6:]
+    
+    # hashed_guessed_proof = str(proof).encode()
+    # last_hash = str(last_hash)
 
+    # hashed_proof = hashlib.sha256(hashed_guessed_proof).hexdigest()
+
+    # return hashed_proof[:6] == last_hash[-6:]
 
 if __name__ == '__main__':
     # What node are we interacting with?
     if len(sys.argv) > 1:
         node = sys.argv[1]
     else:
-        node = "https://lambda-coin.herokuapp.com/api"
+        node = "https://lambda-coin-test-1.herokuapp.com/api"
 
     coins_mined = 0
 
@@ -68,8 +79,10 @@ if __name__ == '__main__':
         data = r.json()
         new_proof = proof_of_work(data.get('proof'))
 
-        post_data = {"proof": new_proof,
-                     "id": id}
+        post_data = {
+            "proof": new_proof,
+            "id": id
+            }
 
         r = requests.post(url=node + "/mine", json=post_data)
         data = r.json()
